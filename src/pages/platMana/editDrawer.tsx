@@ -79,7 +79,7 @@ const EditDrawer: FC<IProps> = ({
         payload = { ...payload, quota: { domain: { capacity } } };
       }
 
-      const res = await request(supplierApi.UpdateAccount(payload), true);
+      const res = await request(supplierApi.UpdateAccount(payload));
       if (res.response === "success") {
         notification.success({ message: "Update Success" });
         onClose();

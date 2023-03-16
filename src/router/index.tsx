@@ -33,6 +33,7 @@ import PlatMana from "@/pages/cdnSite/sitePage/plat-mana";
 
 import User from "@/pages/user";
 import { useNewUserLogin } from "@/store/network/user";
+import useLoginInfo from "@/hooks/useInfo";
 
 /**
  * 项目路由组件
@@ -41,7 +42,9 @@ import { useNewUserLogin } from "@/store/network/user";
  */
 const ProjectRouter: FC = () => {
   const accountInfo = useAccountInfo();
-  // console.log(accountInfo);
+  console.log(accountInfo);
+  // const userType = useLoginInfo().userType;
+
   if (!accountInfo) {
     return <Login />;
   }

@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import { ISearchCustomer } from "@/store/network/customer/interface";
 
-class CustomerAPI {
+class companyApi {
   FindCustomer = (data: ISearchCustomer) => {
     const config: AxiosRequestConfig = {
       url: "/customer/list",
@@ -96,4 +96,4 @@ class CustomerAPI {
     return config;
   };
 }
-export default CustomerAPI;
+export default companyApi;

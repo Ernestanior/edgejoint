@@ -41,9 +41,10 @@ const Index: FC = () => {
       )
     ).subscribe((data) => {
       setOption(
-        data.content.map(({ uid, name }: any) => {
-          return { uid, name };
-        })
+        data.content &&
+          data.content.map(({ uid, name }: any) => {
+            return { uid, name };
+          })
       );
     });
 

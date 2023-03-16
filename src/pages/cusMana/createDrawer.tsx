@@ -1,6 +1,6 @@
 import { warnIcon } from "@/components/icon";
 import Tip from "@/components/tip";
-import { customerApi } from "@/store/api";
+import { companyApi } from "@/store/api";
 import {
   IDefenceQuota,
   IServiceDomain,
@@ -62,7 +62,7 @@ const CreateDrawer: FC<IProps> = ({
       dataAllowance: parseInt(e.dataAllowance) || 0,
       domainQuota: parseInt(e.domainQuota) || 0,
     };
-    const res = await request(customerApi.CreateCustomer(payload));
+    const res = await request(companyApi.CreateCustomer(payload));
     if (res) {
       form.resetFields();
       onClose();

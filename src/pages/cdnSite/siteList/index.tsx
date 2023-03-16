@@ -106,7 +106,7 @@ const Index: FC = (): ReactElement => {
         api = siteApi.DeleteSite(selectedRowKeys);
         break;
     }
-    const res = await request(api, true);
+    const res = await request(api);
     res.response === "success"
       ? notification.success({ message: `${operate} Success` })
       : res.forEach((item: any) =>

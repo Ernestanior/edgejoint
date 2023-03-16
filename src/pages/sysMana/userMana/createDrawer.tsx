@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { customerApi } from "@/store/api";
+import { companyApi } from "@/store/api";
 import request from "@/store/request";
 import { Button, Drawer, Form, Input, notification } from "antd";
 
@@ -24,7 +24,7 @@ const CreateDrawer: FC<IProps> = ({
   const [form] = Form.useForm();
   const onFinish = async (e: any) => {
     const res = await request(
-      customerApi.CreateCustomer({ ...e, type: type || "admin" })
+      companyApi.CreateCustomer({ ...e, type: type || "admin" })
     );
     if (res) {
       form.resetFields();

@@ -53,7 +53,7 @@ const Home: FC = () => {
   }, [userLogin, cdnPage]);
 
   const cdnList = useMemo(
-    () => cdnData.content.map((item) => item.name),
+    () => cdnData.content && cdnData.content.map((item) => item.name),
     [cdnData]
   );
 
@@ -74,7 +74,7 @@ const Home: FC = () => {
   }, [dnsPage, userLogin]);
 
   const dnsList = useMemo(
-    () => dnsData.content.map((item) => item.displayName),
+    () => dnsData.content && dnsData.content.map((item) => item.displayName),
     [dnsData]
   );
 

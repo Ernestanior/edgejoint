@@ -44,7 +44,7 @@ const CreateDrawer: FC<IProps> = ({
       quota: { domain: { capacity: capacity || 0 } },
       supplier: { code, tokenValue },
     };
-    const res = await request(supplierApi.CreateAccount(payload), true);
+    const res = await request(supplierApi.CreateAccount(payload));
     if (res.response === "success") {
       notification.success({ message: "Create Success" });
       onClose();

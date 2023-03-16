@@ -83,7 +83,7 @@ const Index: FC = () => {
         api = supplierApi.DeleteAccount(id);
         break;
     }
-    const res = await request(api, true);
+    const res = await request(api);
     res.response === "success"
       ? notification.success({ message: `${operate} Success` })
       : notification.error({
@@ -125,16 +125,15 @@ const Index: FC = () => {
       },
       {
         text: "启用",
-        hide: (data:any)=>data.status ==="enabled",
+        hide: (data: any) => data.status === "enabled",
         event: async (data: any) => {
           setSelected(data.uid);
-          setEnableFlag(true)
-    
+          setEnableFlag(true);
         },
       },
       {
         text: "禁用",
-        hide: (data:any)=>data.status ==="disabled",
+        hide: (data: any) => data.status === "disabled",
         event: async (data: any) => {
           setSelected(data.uid);
           setDisableFlag(true);

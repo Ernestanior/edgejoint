@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { customerApi } from "@/store/api";
+import { companyApi } from "@/store/api";
 import request from "@/store/request";
 import { Button, Drawer, Form, Input } from "antd";
 
@@ -26,7 +26,7 @@ const CreateDrawer: FC<IProps> = ({
   const onFinish = async (e: any) => {
     if (data) {
       const res = await request(
-        customerApi.ModifyCustomer({ ...e, uid: data.uid })
+        companyApi.ModifyCustomer({ ...e, uid: data.uid })
       );
       if (res) {
         form.resetFields();

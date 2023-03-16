@@ -1,6 +1,6 @@
 import { warnIcon } from "@/components/icon";
 import Tip from "@/components/tip";
-import { customerApi } from "@/store/api";
+import { companyApi } from "@/store/api";
 import {
   IDefenceQuota,
   IServiceDomain,
@@ -76,7 +76,7 @@ const EditDrawer: FC<IProps> = ({
       domainQuota: parseInt(e.domainQuota) || 0,
     };
 
-    const res = await request(customerApi.ModifyCustomer(payload));
+    const res = await request(companyApi.ModifyCustomer(payload));
     if (res) {
       form.resetFields();
       onClose();

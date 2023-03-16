@@ -10,7 +10,7 @@ import StatDrawer from "./statDrawer";
 import InterDataDrawer from "./interDataDrawer";
 import { useLoading } from "@/components/loading";
 import request from "@/store/request";
-import { customerApi } from "@/store/api";
+import { companyApi } from "@/store/api";
 import { EdgeModal } from "@/components/modal";
 import {
   ICustomerList,
@@ -19,6 +19,8 @@ import {
 } from "@/store/network/customer/interface";
 import useEvent from "@/hooks/useEvent";
 import { from } from "rxjs";
+import useRole from "@/hooks/useRole";
+import { IUserType } from "@/hooks/useInfo";
 
 const Index: FC = () => {
   const [loginFlag, setLoginFlag] = useState<boolean>(false);
@@ -40,17 +42,18 @@ const Index: FC = () => {
   const [defenceQuota, setDefenceQuota] = useState<IDefenceQuota[]>([]);
   const [serviceDomain, setServiceDomain] = useState<IServiceDomain[]>([]);
   const loading = useLoading();
+  const roleAuth = useRole();
   const [event$, sendMessage] = useEvent();
 
   const routerState: any = useLocation().state;
 
   useEffect(() => {
-    const obs1 = from(request(customerApi.FindDefenceQuota())).subscribe(
+    const obs1 = from(request(companyApi.FindDefenceQuota())).subscribe(
       (data) => {
         data && data.options && setDefenceQuota(data.options);
       }
     );
-    const obs2 = from(request(customerApi.FindServiceDomain())).subscribe(
+    const obs2 = from(request(companyApi.FindServiceDomain())).subscribe(
       (data) => {
         data && data.content && setServiceDomain(data.content);
       }
@@ -63,7 +66,7 @@ const Index: FC = () => {
 
   const type = useMemo(() => routerState && routerState.cusMana, [routerState]);
   const deleteCustomer = async (data: string[]) => {
-    const res = await request(customerApi.DeleteCustomer(data));
+    const res = await request(companyApi.DeleteCustomer(data));
     res instanceof Array
       ? notification.error({ message: "Delete failed", description: data })
       : notification.success({ message: "Delete Success" });
@@ -72,7 +75,7 @@ const Index: FC = () => {
     setSelected([]);
   };
   const disableCustomer = async (data: string[]) => {
-    const res = await request(customerApi.DisableCustomer(data));
+    const res = await request(companyApi.DisableCustomer(data));
     res instanceof Array
       ? notification.error({ message: "Disable failed", description: data })
       : notification.success({ message: "Disable Success" });
@@ -81,7 +84,7 @@ const Index: FC = () => {
     setSelected([]);
   };
   const enableCustomer = async (data: string[]) => {
-    const res = await request(customerApi.EnableCustomer(data));
+    const res = await request(companyApi.EnableCustomer(data));
     res instanceof Array
       ? notification.error({ message: "Enable failed", description: data })
       : notification.success({ message: "Enable Success" });
@@ -92,7 +95,7 @@ const Index: FC = () => {
   const ChannelUpdate = async () => {
     if (customerUid) {
       const res = await request(
-        customerApi.ChannelUpdate(type === "reg" ? "sales" : "reg", customerUid)
+        companyApi.ChannelUpdate(type === "reg" ? "sales" : "reg", customerUid)
       );
       setConvertFlag(false);
       sendMessage("reload");
@@ -103,7 +106,7 @@ const Index: FC = () => {
   };
   const resetPwd = async () => {
     if (customerUid) {
-      const res = await request(customerApi.ResetPassword(customerUid));
+      const res = await request(companyApi.ResetPassword(customerUid));
       res instanceof Array
         ? notification.error({
             message: "Reset Password failed",
@@ -122,13 +125,16 @@ const Index: FC = () => {
 
   const TempConfig = {
     batchBtns: [
-      {
-        text: "批量删除",
-        onClick: (value: any) => {
-          setDeleteFlag(true);
-          setSelected(value);
+      roleAuth(
+        {
+          text: "批量删除",
+          onClick: (value: any) => {
+            setDeleteFlag(true);
+            setSelected(value);
+          },
         },
-      },
+        [IUserType.SALE]
+      ),
       {
         text: "批量启用",
         onClick: (value: any) => {
@@ -145,11 +151,14 @@ const Index: FC = () => {
       },
     ],
     normalBtns: [
-      {
-        text: "新增客户",
-        onClick: () => setCreateFlag(true),
-        loading: loading,
-      },
+      roleAuth(
+        {
+          text: "新增客户",
+          onClick: () => setCreateFlag(true),
+          loading: loading,
+        },
+        [IUserType.SALE]
+      ),
     ],
     optList: [
       {
@@ -167,13 +176,16 @@ const Index: FC = () => {
           setStatFlag(true);
         },
       },
-      {
-        text: `转换为${type === "sales" ? "注册" : "销售"}客户`,
-        event: (data: any) => {
-          setCustomerUid(data.uid);
-          setConvertFlag(true);
+      roleAuth(
+        {
+          text: `转换为${type === "sales" ? "注册" : "销售"}客户`,
+          event: (data: any) => {
+            setCustomerUid(data.uid);
+            setConvertFlag(true);
+          },
         },
-      },
+        [IUserType.SALE]
+      ),
       {
         text: "重置密码",
         event: (data: any) => {
@@ -195,13 +207,16 @@ const Index: FC = () => {
           setEditFlag(true);
         },
       },
-      {
-        text: "删除",
-        event: (data: any) => {
-          setSelected([data.uid]);
-          setDeleteFlag(true);
+      roleAuth(
+        {
+          text: "删除",
+          event: (data: any) => {
+            setSelected([data.uid]);
+            setDeleteFlag(true);
+          },
         },
-      },
+        [IUserType.SALE]
+      ),
     ],
     onSearch: async (params: any) => {
       const payload = {
@@ -214,7 +229,7 @@ const Index: FC = () => {
         email: params.filters.email || "",
         probationFlag: params.filters.probationFlag,
       };
-      const res = await request(customerApi.FindCustomer(payload));
+      const res = await request(companyApi.FindCustomer(payload));
       setCustomerList(res);
     },
     rowId: "uid",

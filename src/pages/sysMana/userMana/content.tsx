@@ -7,10 +7,12 @@ import EditDrawer from "./editDrawer";
 import { useLoading } from "@/components/loading";
 import { from } from "rxjs";
 import request from "@/store/request";
-import { customerApi } from "@/store/api";
+import { companyApi } from "@/store/api";
 import { EdgeModal } from "@/components/modal";
 import useEvent from "@/hooks/useEvent";
 import { ICustomerList } from "@/store/network/customer/interface";
+import useRole from "@/hooks/useRole";
+import { IUserType } from "@/hooks/useInfo";
 
 const Content: FC = () => {
   const [createFlag, setCreateFlag] = useState<boolean>(false);
@@ -27,12 +29,24 @@ const Content: FC = () => {
   const [event$, sendMessage] = useEvent();
   const loading = useLoading();
   const routerState: any = useLocation().state;
+  const roleAuth = useRole();
   const type = useMemo(() => {
     return routerState && routerState.userMana;
   }, [routerState]);
-
+  const roleList = useMemo(() => {
+    switch (type) {
+      case IUserType.ADMIN:
+        return [];
+      case IUserType.SALE:
+        return [IUserType.SALE];
+      case IUserType.OPERATION:
+        return [IUserType.OPERATION];
+      case IUserType.AGENT:
+        return [IUserType.SALE, IUserType.AGENT];
+    }
+  }, [type]);
   const deleteCustomer = (data: string[]) => {
-    from(request(customerApi.DeleteCustomer(data))).subscribe((data) => {
+    from(request(companyApi.DeleteCustomer(data))).subscribe((data) => {
       data instanceof Object
         ? notification.success({ message: "Delete Success" })
         : notification.error({ message: "Delete failed", description: data });
@@ -42,7 +56,7 @@ const Content: FC = () => {
     });
   };
   const disableCustomer = (data: string[]) => {
-    from(request(customerApi.DisableCustomer(data))).subscribe((data) => {
+    from(request(companyApi.DisableCustomer(data))).subscribe((data) => {
       data instanceof Object
         ? notification.success({ message: "Disable Success" })
         : notification.error({ message: "Disable failed", description: data });
@@ -52,7 +66,7 @@ const Content: FC = () => {
     });
   };
   const enableCustomer = (data: string[]) => {
-    from(request(customerApi.EnableCustomer(data))).subscribe((data) => {
+    from(request(companyApi.EnableCustomer(data))).subscribe((data) => {
       data instanceof Object
         ? notification.success({ message: "Enable Success" })
         : notification.error({ message: "Enable failed", description: data });
@@ -63,23 +77,21 @@ const Content: FC = () => {
   };
   const resetPwd = () => {
     customerUid &&
-      from(request(customerApi.ResetPassword(customerUid))).subscribe(
-        (data) => {
-          data instanceof Object
-            ? notification.success({
-                message: "Reset Password Success",
-                description: data.password,
-                duration: null,
-              })
-            : notification.error({
-                message: "Reset Password failed",
-                description: data,
-              });
-          sendMessage("reload");
-          setPwdFlag(false);
-          setSelected([]);
-        }
-      );
+      from(request(companyApi.ResetPassword(customerUid))).subscribe((data) => {
+        data instanceof Object
+          ? notification.success({
+              message: "Reset Password Success",
+              description: data.password,
+              duration: null,
+            })
+          : notification.error({
+              message: "Reset Password failed",
+              description: data,
+            });
+        sendMessage("reload");
+        setPwdFlag(false);
+        setSelected([]);
+      });
   };
 
   const TempConfig = {
@@ -106,13 +118,16 @@ const Content: FC = () => {
         },
       },
     ],
-    normalBtns: [
-      {
-        text: "新增客户",
-        onClick: () => setCreateFlag(true),
-        loading: loading,
-      },
-    ],
+    normalBtns: roleAuth(
+      [
+        {
+          text: "新增客户",
+          onClick: () => setCreateFlag(true),
+          loading: loading,
+        },
+      ],
+      roleList
+    ),
     optList: [
       {
         text: "编辑",
@@ -146,7 +161,7 @@ const Content: FC = () => {
         name: params.filters.name || "",
         type: type || "admin",
       };
-      const res = await request(customerApi.FindCustomer(payload));
+      const res = await request(companyApi.FindCustomer(payload));
       res && setCustomerList(res);
     },
     rowId: "uid",

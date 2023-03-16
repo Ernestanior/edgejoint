@@ -13,6 +13,7 @@ const Index: FC = (): ReactElement => {
     <Tabs
       style={{ marginBottom: 32 }}
       activeKey={index}
+      type="card"
       onChange={(activeKey: string) =>
         navigator(".", { state: { platMana: activeKey } })
       }
